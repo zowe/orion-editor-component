@@ -1,0 +1,44 @@
+{
+    "name": "orion-editor-component",
+    "version": "0.0.5",
+    "main": "dist/OrionEditor.js",
+    "scripts": {
+        "build": "babel ./src/ -d ./dist/ --ignore DebugBar.js,index.js,languages,index.html --copy-files",
+        "dev": "webpack-dev-server --content-base src --inline --hot",
+        "lint": "eslint ./src/"
+    },
+    "dependencies": {
+        "react": "^15.4.0",
+        "react-dom": "^15.4.0",
+        "prop-types": "^15.5.10"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-eslint": "^7.2.3",
+        "babel-loader": "^7.0.0",
+        "babel-plugin-add-module-exports": "^0.2.1",
+        "babel-plugin-react-html-attrs": "^2.0.0",
+        "babel-plugin-transform-class-properties": "^6.3.13",
+        "babel-plugin-transform-decorators-legacy": "^1.3.4",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-react": "^6.3.13",
+        "babel-preset-stage-0": "^6.3.13",
+        "babel-register": "^6.14.0",
+        "cross-env": "^5.0.0",
+        "css-loader": "^0.28.4",
+        "eslint": "^4.9.0",
+        "eslint-config-airbnb": "^15.1.0",
+        "eslint-plugin-import": "^2.7.0",
+        "eslint-plugin-jsx-a11y": "^5.1.1",
+        "eslint-plugin-react": "^7.3.0",
+        "style-loader": "^0.18.2",
+        "webpack": "^2.6.1",
+        "webpack-dev-server": "^2.4.5"
+    },
+    "publishConfig": {
+        "registry": "https://gizaartifactory.jfrog.io/gizaartifactory/api/npm/npm-local-release/"
+    },
+    "description": "Orion based editor component for use in mvd applications",
+    "author": "IBM",
+    "license": "EPL-2.0"
+}

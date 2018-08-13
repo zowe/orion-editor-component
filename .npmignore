@@ -1,0 +1,9 @@
+.vscode
+webpack.config.js
+.gitignore
+.eslintrc.js
+.babelrc
+.history
+Jenkinsfile
+resources
+src/languages
