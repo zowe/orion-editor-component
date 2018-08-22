@@ -83,7 +83,7 @@ node ('jenkins-slave') {
 
       ansiColor('xterm') {
         // sh 'npm prune'
-        sh 'npm install'
+        sh 'npm ci'
       }
     }
 
