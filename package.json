@@ -5,7 +5,7 @@
     "scripts": {
         "build": "babel ./src/ -d ./dist/ --ignore DebugBar.js,index.js,languages,index.html --copy-files",
         "dev": "webpack-dev-server --content-base src --inline --hot",
-        "lint": "eslint ./src/"
+        "lint": "eslint ./src/ --ignore-pattern built-codeEdit.js"
     },
     "dependencies": {
         "react": "^15.4.0",

@@ -18,6 +18,7 @@ class DebugBar extends React.Component {
         this.state = {
             content: 'hello world',
             syntax: 'text/plain',
+            readonly: false,
         };
     }
 
@@ -26,6 +27,9 @@ class DebugBar extends React.Component {
             <div>
                 <button onClick={() => { this.setState({ content: 'Hello world this is new Content' }); }}>
                     Basic content
+                </button>
+                <button onClick={() => { this.setState({ readonly: !this.state.readonly }); }}>
+                    toggle readonly
                 </button>
                 <button onClick={() => { this.setState({ content: basicJCL }); }}>
                     Basic JCL
@@ -41,7 +45,7 @@ class DebugBar extends React.Component {
                 </button>
                   Current syntax: {this.state.syntax}
 
-                <OrionEditor content={this.state.content} syntax={this.state.syntax} />
+                <OrionEditor content={this.state.content} syntax={this.state.syntax} readonly={this.state.readonly} />
             </div>
         );
     }
