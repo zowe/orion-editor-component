@@ -123,7 +123,7 @@ node ('jenkins-slave') {
         echo "ready to publish snapshot version v${newVersion}..."
         sh "npm version ${newVersion}"
         // publish
-        sh 'npm publish --tag snapshot'
+        sh 'npm publish --tag snapshot --force'
       } else {
         echo "ready to release v${packageVersion}"
         // publish
