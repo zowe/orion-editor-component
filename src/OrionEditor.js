@@ -43,12 +43,16 @@ export default class OrionEditor extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { content, syntax } = this.props;
+        const { content, syntax, readonly } = this.props;
         if (content !== nextProps.content) {
             this.state.editorViewer.setContents(nextProps.content, syntax);
         }
         if (syntax !== nextProps.syntax) {
             this.changeSyntax(nextProps.syntax, nextProps.content);
+        }
+        if (readonly !== nextProps.readonly) {
+            this.state.editorViewer.readonly = readonly;
+            this.state.editorViewer.editor.getTextView().setOptions({ readonly });
         }
     }
 
@@ -59,14 +63,20 @@ export default class OrionEditor extends React.Component {
     }
 
     createCodeEditor() {
-        const { passContentToParent } = this.props;
+        const { passContentToParent, readonly } = this.props;
         codeEdit.create({ parent: 'embeddedEditor' })
             .then(editorViewer => {
                 this.setState({ editorViewer });
                 editorViewer.setContents(' ', 'text/plain');
-                editorViewer.editor.addEventListener('InputChanged', () => {
-                    passContentToParent(editorViewer.editor.getTextView().getText());
-                });
+                if (passContentToParent) {
+                    editorViewer.editor.addEventListener('InputChanged', () => {
+                        passContentToParent(editorViewer.editor.getTextView().getText());
+                    });
+                }
+                if (readonly) {
+                    // Only way to initialise editor as readonly
+                    editorViewer.readonly = readonly; // eslint-disable-line no-param-reassign
+                }
             });
     }
 
@@ -138,4 +148,5 @@ OrionEditor.propTypes = {
     syntax: PropTypes.string,
     passContentToParent: PropTypes.func,
     editorTopOffset: PropTypes.number,
+    readonly: PropTypes.bool,
 };
