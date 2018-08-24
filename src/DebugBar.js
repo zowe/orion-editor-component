@@ -10,7 +10,7 @@
 
 import React from 'react';
 import OrionEditor from './OrionEditor';
-import { basicJCL, basicREXX } from '../resources/languageSamples';
+import { basicJCL, basicREXX, jesJCL } from '../resources/languageSamples';
 
 class DebugBar extends React.Component {
     constructor(props) {
@@ -36,6 +36,9 @@ class DebugBar extends React.Component {
                 </button>
                 <button onClick={() => { this.setState({ content: basicREXX }); }}>
                     Basic REXX
+                </button>
+                <button onClick={() => { this.setState({ content: jesJCL }); }}>
+                    JES JCL
                 </button>
                 <button onClick={() => { this.setState({ syntax: 'text/jclcontext' }); }}>
                     Set syntax JCL
