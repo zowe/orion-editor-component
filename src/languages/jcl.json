@@ -273,7 +273,7 @@
                 "comment" : "closing bracket floating comments - not working fully \\' probably affected by multiline test"
             },
             {
-                "match": "(^\\/\\/\\*.{0,})|(^\\/\\/ \\b[ A-Za-z0-9]{68}.)|(^\\/\\/ \\b[ A-Za-z0-9]{3,}$)|(\\/\\*.+\\*\\/$)",
+                "match": "(((XX)|(\\/\\/))\\*.*)|(^\\/\\/ \\b[ A-Za-z0-9]{68}.)|(^\\/\\/ \\b[ A-Za-z0-9]{3,}$)|(\\/\\*.+\\*\\/$)",
                 "name": "comment",
                 "comment" : "//* comment"
             },
