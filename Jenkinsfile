@@ -118,7 +118,7 @@ node ('jenkins-slave') {
         sh "git config --global user.name \"${npmUser}\""
         sh "git status"
 
-        def buildIdentifier = getBuildIdentifier(true, 'master', false)
+        def buildIdentifier = getBuildIdentifier('%Y%m%d-%H%M%S', 'master', false)
         def newVersion = "${packageVersion}-snapshot.${buildIdentifier}"
         echo "ready to publish snapshot version v${newVersion}..."
         sh "npm version ${newVersion}"
