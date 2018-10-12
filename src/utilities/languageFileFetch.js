@@ -85,7 +85,7 @@ function fetchLanguageFiles(file) {
 }
 
 export default function getLanguages(funcInitEditor, host) {
-    const languages = 'languages/languages.json';
+    const languages = 'explorer-languages/orion/languages.json';
     let callHost = '';
     if (location.hostname === 'localhost' && !host) {
         callHost = `http://${location.host}`;
