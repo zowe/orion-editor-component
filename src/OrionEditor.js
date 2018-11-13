@@ -63,7 +63,7 @@ export default class OrionEditor extends React.Component {
     }
 
     createCodeEditor() {
-        const { passContentToParent, readonly } = this.props;
+        const { passContentToParent, readonly, editorReady } = this.props;
         codeEdit.create({ parent: 'embeddedEditor' })
             .then(editorViewer => {
                 this.setState({ editorViewer });
@@ -77,6 +77,7 @@ export default class OrionEditor extends React.Component {
                     // Only way to initialise editor as readonly
                     editorViewer.readonly = readonly; // eslint-disable-line no-param-reassign
                 }
+                editorReady();
             });
     }
 
@@ -149,4 +150,5 @@ OrionEditor.propTypes = {
     passContentToParent: PropTypes.func,
     editorTopOffset: PropTypes.number,
     readonly: PropTypes.bool,
+    editorReady: PropTypes.func,
 };
