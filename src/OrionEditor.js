@@ -77,7 +77,9 @@ export default class OrionEditor extends React.Component {
                     // Only way to initialise editor as readonly
                     editorViewer.readonly = readonly; // eslint-disable-line no-param-reassign
                 }
-                editorReady();
+                if (editorReady) {
+                    editorReady();
+                }
             });
     }
 
