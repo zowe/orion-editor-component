@@ -9,6 +9,7 @@
  */
 
 import { createContentAssistProvider, createHoverInfo } from './languageUtilities';
+import languages from './languages';
 
 function registerHoverHelp(contentType, highlightSchema) {
     window.codeEdit.serviceRegistry.registerService('orion.edit.hover',
@@ -30,71 +31,26 @@ function registerContentAssist(contentType, contentAssistSchema) {
     );
 }
 
-function registerFiles(contentTypes, host, funcCreateCodeEdit) {
-    for (let i = 0; i < contentTypes.length; i++) {
-        const contentType = contentTypes[i];
-        if (contentType.definitions) {
-            fetch(`${host}/${contentType.definitions}`)
-                .then(response => { return response.json(); })
-                .then(definitions => {
-                    registerHoverHelp(contentType, definitions.hover);
-                    registerContentAssist(contentType, definitions.hover);
-
-                    const words = definitions.highlighter;
-                    words.patterns.forEach(pattern => {
-                        if (pattern.expand) {
-                            pattern.match = `(?i)\\b(?:${Object.keys(definitions.hover[pattern.comment]).join('|')})\\b`;
-                        }
-                    });
-                    window.codeEdit.serviceRegistry.registerService('orion.edit.highlighter', {}, words);
-                });
-        }
-    }
+function registerFiles(contentTypes, funcCreateCodeEdit) {
+    contentTypes.forEach(content => {
+        const contentDefns = content.definitions;
+        registerHoverHelp(content, contentDefns.hover);
+        registerContentAssist(content, contentDefns.hover);
+        const words = contentDefns.highlighter;
+        words.patterns.forEach(pattern => {
+            if (pattern.expand) {
+                pattern.match = `(?i)\\b(?:${Object.keys(contentDefns.hover[pattern.comment]).join('|')})\\b`;
+            }
+        });
+        window.codeEdit.serviceRegistry.registerService('orion.edit.highlighter', {}, words);
+    });
     funcCreateCodeEdit(); // callback the rest of the initialisation routines.
 }
 
-function fetchLanguageFiles(file) {
-    return new Promise((resolve => {
-        const contentTypes = [];
-        fetch(file)
-            .then(response => {
-                if (!response.ok) {
-                    (console.log(`Response is not okay: : ${file}`, response));
-                }
-                return response.json();
-            })
-            .then(json => {
-                Object.keys(json).forEach(key => {
-                    const content = {
-                        id: (json[key].highlighter) ? json[key].highlighter.id : json[key].id,
-                        extension: json[key].extension,
-                        dsn: json[key].dsn,
-                        patterns: json[key].patterns,
-                        name: json[key].name,
-                        extends: json[key].extends,
-                        definitions: json[key].definitions,
-                    };
-                    contentTypes.push(content);
-                });
-                resolve(contentTypes);
-            }).catch(error => {
-                console.log(`Failed to locate language files: ${file} `, error.message);
-                resolve(contentTypes);
-            });
-    }));
-}
-
-export default function getLanguages(funcInitEditor, host) {
-    const languages = 'explorer-languages/orion/languages.json';
-    let callHost = '';
-    if (location.hostname === 'localhost' && !host) {
-        callHost = `http://${location.host}`;
-    } else {
-        callHost = `https://${host}`;
-    }
-
-    fetchLanguageFiles(`${callHost}/${languages}`)
-        .then(contentTypes => {
-            registerFiles(contentTypes, callHost, funcInitEditor(contentTypes));
-        });
+export default function getLanguages(funcInitEditor) {
+    const contentTypes = [];
+    Object.keys(languages).forEach(key => {
+        contentTypes.push(languages[key]);
+    });
+    registerFiles(contentTypes, funcInitEditor(contentTypes));
 }
