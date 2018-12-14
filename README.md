@@ -1,5 +1,7 @@
 # orion-editor-component
 
+[![Code Quality](https://jayne.zowe.org:9000/api/project_badges/measure?project=zowe%3Aorion-editor-component&metric=alert_status)](https://jayne.zowe.org:9000/dashboard/index/zowe:orion-editor-component)
+
 Eclipse Orion based React editor component.
 
 ## Component arguments/properties

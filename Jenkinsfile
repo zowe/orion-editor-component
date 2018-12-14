@@ -15,6 +15,7 @@
 @Library('zoe-jenkins-library') _
 
 def isPullRequest = env.BRANCH_NAME.startsWith('PR-')
+def isMasterBranch = env.BRANCH_NAME == 'master'
 
 def opts = []
 // keep last 20 builds for regular branches, no keep for pull requests
@@ -39,7 +40,7 @@ customParameters.push(string(
 ))
 customParameters.push(booleanParam(
   name: 'NPM_RELEASE',
-  description: 'Publish a release or snapshot version. By default, this task will create snapshot. Check this to publish a release version.',
+  description: 'Publish a release or snapshot version. By default, this task will create snapshot. Check this to publish a release version. Release can only be done on master branch.',
   defaultValue: false
  ))
 customParameters.push(string(
@@ -94,6 +95,20 @@ node ('jenkins-slave') {
       }
     }
 
+    stage('SonarQube analysis') {
+      def scannerHome = tool 'sonar-scanner-3.2.0';
+      withSonarQubeEnv('sonar-default-server') {
+        sh "${scannerHome}/bin/sonar-scanner"
+      }
+
+      timeout(time: 1, unit: 'HOURS') {
+        def qg = waitForQualityGate()
+        if (qg.status != 'OK') {
+          error "Pipeline aborted due to quality gate failure: ${qg.status}"
+        }
+      }
+    }
+
     stage('build') {
       ansiColor('xterm') {
         sh 'npm run build'
@@ -111,7 +126,7 @@ node ('jenkins-slave') {
       // login to private npm registry
       def npmUser = npmLogin(npmRegistry, params.NPM_CREDENTIALS_ID, params.NPM_USER_EMAIL)
 
-      if (!params.NPM_RELEASE) {
+      if (!params.NPM_RELEASE || !isMasterBranch) {
         // show current git status for troubleshooting purpose
         // if git status is not clean, npm version will fail
         sh "git config --global user.email \"${params.NPM_USER_EMAIL}\""
@@ -128,6 +143,9 @@ node ('jenkins-slave') {
         echo "ready to release v${packageVersion}"
         // publish
         sh 'npm publish'
+        // tag branch
+        sh "git tag v${packageVersion}"
+        sh "git push --tags"
       }
     }
 

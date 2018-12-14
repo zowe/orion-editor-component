@@ -7,3 +7,5 @@ webpack.config.js
 Jenkinsfile
 resources
 src/languages
+.scannerwork
+sonar-project.properties
