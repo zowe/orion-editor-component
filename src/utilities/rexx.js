@@ -170,7 +170,7 @@ const jsonData = {
     },
     highlighter: {
         id: 'orion.Rexx',
-    	contentTypes: ['text/rexxcontext'],
+        contentTypes: ['text/rexxcontext'],
         patterns:
         [
             { include: 'orion.lib#string_doubleQuote' },

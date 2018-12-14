@@ -31,24 +31,29 @@ const jsonData = {
             ENDGROUP: 'Operation Field',
             ENDIF: 'Operation Field',
             ENDSET: 'Operation Field',
-            EXEC: '__The EXEC PGM Operation Field__\n\nMarks the beginning of a job step; optionally assigns a name to the step; identifies the program or the cataloged or in-stream procedure to be executed in this step.',
+            EXEC: '__The EXEC PGM Operation Field__\n\nMarks the beginning of a job step; optionally assigns a name to ' +
+                'the step; identifies the program or the cataloged or in-stream procedure to be executed in this step.',
             EXPORT: 'Operation Field Smack it',
             GJOB: 'Operation Field',
             IF: 'Operation Field',
             INCLUDE: 'Operation Field',
-            JCLLIB: '__The JCLLIB Operation Field__\n\nInstruction to search for the procedures executed by this job in the specified library prior to searching the system library.',
+            JCLLIB: '__The JCLLIB Operation Field__\n\nInstruction to search for the procedures executed by this job in ' +
+                'the specified library prior to searching the system library.',
             JOB: '__The JOB Operation Field__\n\nThe first control statement. Marks the beginning of a job; assigns a name to the job.',
             JOBCAT: '__The JOBCAT Operation Field__\n\nInstruction to use the specified catalog for this job rather than the system catalog.',
             JOBGROUP: 'Operation Field',
             JOBSET: 'Operation Field',
             OUTPUT: 'Operation Field',
             PEND: 'Operation Field',
-            PROC: '__The PROC Operation Field__\n\nMarks the beginning of an in-stream procedure and may mark the beginning of a cataloged procedure; assigns default values to parameters defined in the procedure.',
+            PROC: '__The PROC Operation Field__\n\nMarks the beginning of an in-stream procedure and may mark the ' +
+                'beginning of a cataloged procedure; assigns default values to parameters defined in the procedure.',
             SCHEDULE: 'Operation Field',
             SET: 'Operation Field',
             SJOB: 'Operation Field',
-            STEPCAT: '__ The STEPCAT Operation Field__\n\nInstruction to use the specified catalog for this step rather than the system catalog.',
-            STEPLIB: '__ The STEPLIB Operation Field__\n\nInstruction to search for the program executed by this step in the specified library prior to searching the system library.',
+            STEPCAT: '__ The STEPCAT Operation Field__\n\nInstruction to use the specified catalog for this step rather ' +
+                'than the system catalog.',
+            STEPLIB: '__ The STEPLIB Operation Field__\n\nInstruction to search for the program executed by this step in ' +
+                'the specified library prior to searching the system library.',
             THEN: 'Operation Field',
             XMIT: '__Operation Field__\n\nUse the XMIT command to transmit files to another JES node',
         },
@@ -189,9 +194,12 @@ const jsonData = {
             SYSAREA: 'OUTPUT Parameter',
             SYSDA: '__UNIT Parameter__\n\nGeneric disk storage',
             SYSIN: '__ The SYSIN Data Definition Parameter__\n\nIn-stream dataset.',
-            SYSOUT: '__ The SYSOUT Data Definition Parameter__\n\nUse the SYSOUT parameter to identify this data set as a system output data set, usually called a sysout data set.',
-            SYSPRINT: '__ The SYSPRINT Data Definition Parameter__\n\nUse the SYSPRINT parameter to identify this data set as a system output data set, usually used by utility programs.',
-            SYSPUNCH: '__ The SYSPUNCH Data Definition Parameter__\n\nThe SYSPUNCH data set is a temporary data set containing object modules assembled by running the job stream produced by system generation or the GENERATE command.',
+            SYSOUT: '__ The SYSOUT Data Definition Parameter__\n\nUse the SYSOUT parameter to identify this data set as ' +
+                'a system output data set, usually called a sysout data set.',
+            SYSPRINT: '__ The SYSPRINT Data Definition Parameter__\n\nUse the SYSPRINT parameter to identify this data ' +
+                'set as a system output data set, usually used by utility programs.',
+            SYSPUNCH: '__ The SYSPUNCH Data Definition Parameter__\n\nThe SYSPUNCH data set is a temporary data set ' +
+                'containing object modules assembled by running the job stream produced by system generation or the GENERATE command.',
             SYSTEM: 'JOBGROUP Parameter',
             TERM: 'Data Definition Parameter',
             THRESHLD: 'OUTPUT Parameter',
@@ -228,8 +236,8 @@ const jsonData = {
         },
     },
     highlighter: {
-      	id: 'orion.JCL',
-   	    contentTypes: ['text/jclcontext'],
+        id: 'orion.JCL',
+        contentTypes: ['text/jclcontext'],
         patterns: [
             { include: 'orion.lib#string_doubleQuote' },
             { include: 'orion.lib#string_singleQuote' },

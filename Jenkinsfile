@@ -90,8 +90,7 @@ node ('jenkins-slave') {
 
     stage('test') {
       ansiColor('xterm') {
-        echo '(TODO): npm run lint'
-        // sh 'npm run lint'
+        sh 'npm run lint'
       }
     }
 
