@@ -12,8 +12,8 @@ export function createContentAssistProvider(words) {
     return {
         computeProposals(buffer, offset, context) {
             const result = [];
-            for (const section in words) {
-                for (const keyword in words[section]) {
+            Object.keys(words).forEach(section => {
+                Object.keys(words[section]).forEach(keyword => {
                     if (keyword.startsWith(context.prefix) || keyword.startsWith(context.prefix.toUpperCase())) {
                         result.push({
                             proposal: keyword,
@@ -21,8 +21,8 @@ export function createContentAssistProvider(words) {
                             hover: { content: words[section][keyword], type: 'markdown' },
                         });
                     }
-                }
-            }
+                });
+            });
             return result;
         },
     };
@@ -48,20 +48,21 @@ export function createHoverInfo(words) {
                 let content = '';
 
                 if (hoverword.length > 0) {
-                    for (const section in words) {
-                        for (const keyword in words[section]) {
+                    Object.keys(words).forEach(section => {
+                        Object.keys(words[section]).forEach(keyword => {
+                            // TODO:: we should break out of the loop once we've found our content
                             if (keyword === hoverword) {
                                 content = words[section][keyword];
-                                break;
                             }
-                        }
-                    }
+                        });
+                    });
                 }
                 if (content.length > 0) {
                     return { title: hoverword,
                         content,
                         type: 'markdown' };
                 }
+                return {};
             });
             return myPromise;
         },

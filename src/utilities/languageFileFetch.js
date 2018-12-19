@@ -37,10 +37,14 @@ function registerFiles(contentTypes, funcCreateCodeEdit) {
         registerHoverHelp(content, contentDefns.hover);
         registerContentAssist(content, contentDefns.hover);
         const words = contentDefns.highlighter;
+        const expandedMatches = [];
         words.patterns.forEach(pattern => {
             if (pattern.expand) {
-                pattern.match = `(?i)\\b(?:${Object.keys(contentDefns.hover[pattern.comment]).join('|')})\\b`;
+                expandedMatches.push({ [pattern.comment]: `(?i)\\b(?:${Object.keys(contentDefns.hover[pattern.comment]).join('|')})\\b` });
             }
+        });
+        expandedMatches.forEach(pattern => {
+            words.patterns.find(element => { return element.comment === Object.keys(pattern)[0]; }).match = Object.values(pattern)[0];
         });
         window.codeEdit.serviceRegistry.registerService('orion.edit.highlighter', {}, words);
     });
