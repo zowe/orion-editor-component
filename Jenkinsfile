@@ -14,8 +14,13 @@
 
 @Library('zoe-jenkins-library') _
 
+def repositoryName = 'zowe/orion-editor-component'
 def isPullRequest = env.BRANCH_NAME.startsWith('PR-')
 def isMasterBranch = env.BRANCH_NAME == 'master'
+def isReleaseBranch = env.BRANCH_NAME ==~ /^v[0-9]+\.[0-9]+\.[0-9x]+$/
+def extraReleaseBranches = ['tag-release']
+def supportedReleaseTypes = ['PATCH', 'MINOR', 'MAJOR']
+def allowReleasing = false
 
 def opts = []
 // keep last 20 builds for regular branches, no keep for pull requests
@@ -38,16 +43,37 @@ customParameters.push(string(
   defaultValue: 'giza-jenkins@gmail.com',
   trim: true
 ))
-customParameters.push(booleanParam(
+customParameters.push(choice(
   name: 'NPM_RELEASE',
-  description: 'Publish a release or snapshot version. By default, this task will create snapshot. Check this to publish a release version. Release can only be done on master branch.',
-  defaultValue: false
+  description: 'Publish a release or snapshot version. By default, this task will create snapshot. If you choose release other than snapshot, your branch version will bump up. Release can only be enabled on `master` or version branch like `v1.2.3`.',
+  choices: ['SNAPSHOT', 'PATCH', 'MINOR', 'MAJOR']
  ))
 customParameters.push(string(
   name: 'ARTIFACTORY_SERVER',
   description: 'Artifactory server, should be pre-defined in Jenkins configuration',
   defaultValue: 'gizaArtifactory',
   trim: true
+))
+customParameters.push(credentials(
+  name: 'GITHUB_CREDENTIALS',
+  description: 'Github user credentials',
+  credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
+  defaultValue: 'zowe-robot-github',
+  required: true
+))
+customParameters.push(string(
+  name: 'GITHUB_USER_EMAIL',
+  description: 'github user email',
+  defaultValue: 'zowe.robot@gmail.com',
+  trim: true,
+  required: true
+))
+customParameters.push(string(
+  name: 'GITHUB_USER_NAME',
+  description: 'github user name',
+  defaultValue: 'Zowe Robot',
+  trim: true,
+  required: true
 ))
 opts.push(parameters(customParameters))
 
@@ -69,6 +95,14 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       echo "Current branch is ${env.BRANCH_NAME}"
       if (isPullRequest) {
         echo "This is a pull request"
+      }
+
+      // only if we are on master, or v?.?.? / v?.?.x branch, we allow release
+      if (params.NPM_RELEASE && supportedReleaseTypes.any{it == "${params.NPM_RELEASE}"} &&
+        (isMasterBranch || isReleaseBranch || extraReleaseBranches.any{it == "${env.BRANCH_NAME}"})) {
+        allowReleasing = true
+      } else {
+        echo "Release will be skipped."
       }
 
       // get package information
@@ -126,11 +160,12 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       // login to private npm registry
       def npmUser = npmLogin(npmRegistry, params.NPM_CREDENTIALS_ID, params.NPM_USER_EMAIL)
 
-      if (!params.NPM_RELEASE || !isMasterBranch) {
+      sh "git config --global user.email \"${params.GITHUB_USER_EMAIL}\""
+      sh "git config --global user.name \"${params.GITHUB_USER_NAME}\""
+
+      if (!allowReleasing) { // publish snapshot
         // show current git status for troubleshooting purpose
         // if git status is not clean, npm version will fail
-        sh "git config --global user.email \"${params.NPM_USER_EMAIL}\""
-        sh "git config --global user.name \"${npmUser}\""
         sh "git status"
 
         def buildIdentifier = getBuildIdentifier('%Y%m%d-%H%M%S', 'master', false)
@@ -143,9 +178,21 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
         echo "ready to release v${packageVersion}"
         // publish
         sh 'npm publish'
-        // tag branch
-        sh "git tag v${packageVersion}"
-        sh "git push --tags"
+
+        def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
+        tagGithubRepository(
+          repositoryName,
+          commitHash,
+          "v${packageVersion}",
+          params.GITHUB_CREDENTIALS
+        )
+        // bump version
+        npmVersion(
+          repositoryName,
+          env.BRANCH_NAME,
+          params.NPM_RELEASE.toLowerCase(),
+          params.GITHUB_CREDENTIALS
+        )
       }
     }
 
