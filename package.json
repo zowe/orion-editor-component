@@ -36,7 +36,7 @@
         "webpack-dev-server": "^2.4.5"
     },
     "publishConfig": {
-        "registry": "https://gizaartifactory.jfrog.io/gizaartifactory/api/npm/npm-local-release/"
+        "registry": "http://35.231.209.177:8081/repository/npm-private/"
     },
     "description": "Orion based editor component for use in mvd applications",
     "author": "IBM",
