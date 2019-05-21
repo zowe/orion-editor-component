@@ -44,7 +44,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name          : 'Missing',
     operation     : {
-      sh 'echo "<testsuites name=\"Empty\"></testsuites>" > junit.xml'
+      sh 'echo \'<testsuites name="Empty"></testsuites>\' > junit.xml'
     },
     junit         : 'junit.xml'
   )
