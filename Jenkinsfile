@@ -12,7 +12,7 @@
 
 
 node('ibm-jenkins-slave-nvm') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@staging").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.nodejs.NodeJSPipeline.new(this)
 
@@ -42,11 +42,11 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.build()
 
   pipeline.test(
-    name          : 'Missing',
-    operation     : {
-      sh 'echo \'<testsuites name="Empty"></testsuites>\' > junit.xml'
+    name              : 'Missing',
+    operation         : {
+      echo 'Under construction.'
     },
-    junit         : 'junit.xml'
+    allowMissingJunit : true
   )
 
   // we need sonar scan
