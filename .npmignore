@@ -9,3 +9,4 @@ resources
 src/languages
 .scannerwork
 sonar-project.properties
+junit.xml

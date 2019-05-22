@@ -7,172 +7,57 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018
+ * Copyright IBM Corporation 2018, 2019
  */
 
 
+node('ibm-jenkins-slave-nvm') {
+  def lib = library("jenkins-library@staging").org.zowe.jenkins_shared_library
 
-@Library('zoe-jenkins-library') _
+  def pipeline = lib.pipelines.nodejs.NodeJSPipeline.new(this)
 
-def isPullRequest = env.BRANCH_NAME.startsWith('PR-')
-def isMasterBranch = env.BRANCH_NAME == 'master'
+  pipeline.admins.add("jackjia")
 
-def opts = []
-// keep last 20 builds for regular branches, no keep for pull requests
-opts.push(buildDiscarder(logRotator(numToKeepStr: (isPullRequest ? '' : '20'))))
-// disable concurrent build
-opts.push(disableConcurrentBuilds())
+  pipeline.setup(
+    packageName: 'org.zowe.explorer-jes',
+    github: [
+      email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+    ],
+    artifactory: [
+      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+    ],
+    publishRegistry: [
+      email                      : lib.Constants.DEFAULT_NPM_PRIVATE_REGISTRY_EMAIL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_NPM_PRIVATE_REGISTRY_CREDENTIAL,
+    ],
+    // FIXME: ideally this should set to false (using default by remove this line)
+    ignoreAuditFailure            : true
+  )
 
-// define custom build parameters
-def customParameters = []
-customParameters.push(credentials(
-  name: 'NPM_CREDENTIALS_ID',
-  description: 'npm auth token',
-  credentialType: 'org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl',
-  defaultValue: 'giza-jenkins-basicAuth',
-  required: true
-))
-customParameters.push(string(
-  name: 'NPM_USER_EMAIL',
-  description: 'npm user email',
-  defaultValue: 'giza-jenkins@gmail.com',
-  trim: true
-))
-customParameters.push(booleanParam(
-  name: 'NPM_RELEASE',
-  description: 'Publish a release or snapshot version. By default, this task will create snapshot. Check this to publish a release version. Release can only be done on master branch.',
-  defaultValue: false
- ))
-customParameters.push(string(
-  name: 'ARTIFACTORY_SERVER',
-  description: 'Artifactory server, should be pre-defined in Jenkins configuration',
-  defaultValue: 'gizaArtifactory',
-  trim: true
-))
-opts.push(parameters(customParameters))
+  // we have a custom build command
+  pipeline.build()
 
-// set build properties
-properties(opts)
+  pipeline.test(
+    name              : 'Missing',
+    operation         : {
+      echo 'Under construction.'
+    },
+    allowMissingJunit : true
+  )
 
-node ('jenkins-slave') {
-  currentBuild.result = 'SUCCESS'
-  def packageName
-  def packageVersion
+  // we need sonar scan
+  pipeline.sonarScan(
+    scannerTool     : lib.Constants.DEFAULT_SONARQUBE_SCANNER_TOOL,
+    scannerServer   : lib.Constants.DEFAULT_SONARQUBE_SERVER
+  )
 
-  try {
+  // define we need publish stage
+  pipeline.publish()
 
-    stage('checkout'){
-      // checkout source code
-      checkout scm
+  // define we need release stage
+  pipeline.release()
 
-      // check if it's pull request
-      echo "Current branch is ${env.BRANCH_NAME}"
-      if (isPullRequest) {
-        echo "This is a pull request"
-      }
-
-      // get package information
-      packageName = sh(script: "node -e \"console.log(require('./package.json').name)\"", returnStdout: true).trim()
-      packageVersion = sh(script: "node -e \"console.log(require('./package.json').version)\"", returnStdout: true).trim()
-      echo "Building ${packageName} v${packageVersion}..."
-    }
-
-    stage('prepare') {
-      // show node/npm version
-      sh 'node -v'
-      sh 'npm -v'
-
-      ansiColor('xterm') {
-        // sh 'npm prune'
-        sh 'npm ci'
-      }
-    }
-
-    stage('test') {
-      ansiColor('xterm') {
-        sh 'npm run lint'
-      }
-    }
-
-    stage('SonarQube analysis') {
-      def scannerHome = tool 'sonar-scanner-3.2.0';
-      withSonarQubeEnv('sonar-default-server') {
-        sh "${scannerHome}/bin/sonar-scanner"
-      }
-
-      timeout(time: 1, unit: 'HOURS') {
-        def qg = waitForQualityGate()
-        if (qg.status != 'OK') {
-          error "Pipeline aborted due to quality gate failure: ${qg.status}"
-        }
-      }
-    }
-
-    stage('build') {
-      ansiColor('xterm') {
-        sh 'npm run build'
-      }
-    }
-
-    stage('publish') {
-      // ===== publishing to jfrog npm registry ==============================
-      // artifactory is pre-defined in Jenkins management
-      def server = Artifactory.server params.ARTIFACTORY_SERVER
-      def npmRegistry = sh(script: "node -e \"console.log(require('./package.json').publishConfig.registry)\"", returnStdout: true).trim()
-      if (!npmRegistry || !npmRegistry.startsWith('http')) {
-        error 'npm registry is not defined, or cannot be retrieved'
-      }
-      // login to private npm registry
-      def npmUser = npmLogin(npmRegistry, params.NPM_CREDENTIALS_ID, params.NPM_USER_EMAIL)
-
-      if (!params.NPM_RELEASE || !isMasterBranch) {
-        // show current git status for troubleshooting purpose
-        // if git status is not clean, npm version will fail
-        sh "git config --global user.email \"${params.NPM_USER_EMAIL}\""
-        sh "git config --global user.name \"${npmUser}\""
-        sh "git status"
-
-        def buildIdentifier = getBuildIdentifier('%Y%m%d-%H%M%S', 'master', false)
-        def newVersion = "${packageVersion}-snapshot.${buildIdentifier}"
-        echo "ready to publish snapshot version v${newVersion}..."
-        sh "npm version ${newVersion}"
-        // publish
-        sh 'npm publish --tag snapshot --force'
-      } else {
-        echo "ready to release v${packageVersion}"
-        // publish
-        sh 'npm publish'
-        // tag branch
-        sh "git tag v${packageVersion}"
-        sh "git push --tags"
-      }
-    }
-
-    stage('done') {
-      // send out notification
-      emailext body: "Job \"${env.JOB_NAME}\" build #${env.BUILD_NUMBER} success.\n\nCheck detail: ${env.BUILD_URL}" ,
-          subject: "[Jenkins] Job \"${env.JOB_NAME}\" build #${env.BUILD_NUMBER} success",
-          recipientProviders: [
-            [$class: 'RequesterRecipientProvider'],
-            [$class: 'CulpritsRecipientProvider'],
-            [$class: 'DevelopersRecipientProvider'],
-            [$class: 'UpstreamComitterRecipientProvider']
-          ]
-    }
-
-  } catch (err) {
-    currentBuild.result = 'FAILURE'
-
-    // catch all failures to send out notification
-    emailext body: "Job \"${env.JOB_NAME}\" build #${env.BUILD_NUMBER} failed.\n\nError: ${err}\n\nCheck detail: ${env.BUILD_URL}" ,
-        subject: "[Jenkins] Job \"${env.JOB_NAME}\" build #${env.BUILD_NUMBER} failed",
-        recipientProviders: [
-          [$class: 'RequesterRecipientProvider'],
-          [$class: 'CulpritsRecipientProvider'],
-          [$class: 'DevelopersRecipientProvider'],
-          [$class: 'UpstreamComitterRecipientProvider']
-        ]
-
-    throw err
-  }
+  pipeline.end()
 }
