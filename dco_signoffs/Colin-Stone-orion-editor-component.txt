@@ -1,0 +1,8 @@
+I, Colin-Stone hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: 30794003+Colin-Stone@users.noreply.github.com
+
+3784a365724c98297f4b87015530e634617f02f6 Remove surge dependency
+
+Unsure how this got in
+9d40a406e26a44139e756fb48ecc8cd8d152f286 Change location of language files
+
+To support API Mediation Layer we need longer uri references
