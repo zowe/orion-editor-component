@@ -51,8 +51,8 @@ export default class OrionEditor extends React.Component {
             this.changeSyntax(nextProps.syntax, nextProps.content);
         }
         if (readonly !== nextProps.readonly) {
-            this.state.editorViewer.readonly = readonly;
-            this.state.editorViewer.editor.getTextView().setOptions({ readonly });
+            this.state.editorViewer.readonly = nextProps.readonly;
+            this.state.editorViewer.editor.getTextView().setOptions({ readonly: nextProps.readonly });
         }
     }
 
