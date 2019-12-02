@@ -23,6 +23,6 @@ getContent = content => {
 * npm run dev - Starts a webpack dev server that renders the Editor and a debug bar for testing purposes
 * npm run lint - *Broken temporarily* Ensures javascript style guidance
 * npm run build - Uses babel to produce distribution
-* npm publish - Publish to https://gizaartifactory.jfrog.io/gizaartifactory/api/npm/npm-local-release/
+* npm publish - Publish to https://zowe.jfrog.io/zowe/api/npm/npm-local-release/
 
 A languageFileHost prop is required if the component is to be reused, when developing the editor within this repo language files are served up by webpack from /src/languages
