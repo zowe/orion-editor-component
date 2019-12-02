@@ -25,12 +25,12 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ],
     publishRegistry: [
-      email                      : lib.Constants.DEFAULT_NPM_PRIVATE_REGISTRY_EMAIL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_NPM_PRIVATE_REGISTRY_CREDENTIAL,
+      email                      : lib.Constants.DEFAULT_LFJ_NPM_PRIVATE_REGISTRY_EMAIL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_NPM_PRIVATE_REGISTRY_CREDENTIAL,
     ],
     // FIXME: ideally this should set to false (using default by remove this line)
     ignoreAuditFailure            : true,
