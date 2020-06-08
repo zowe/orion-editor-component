@@ -42,17 +42,17 @@ export default class OrionEditor extends React.Component {
         window.addEventListener('resize', () => { this.updateEditorHeight(editorTopOffset); });
     }
 
-    componentWillReceiveProps(nextProps) {
-        const { content, syntax, readonly } = this.props;
-        if (content !== nextProps.content) {
-            this.state.editorViewer.setContents(nextProps.content, syntax);
+    componentDidUpdate(prevProps) {
+        const { content, syntax, readonly } = prevProps;
+        if (content !== this.props.content) {
+            this.state.editorViewer.setContents(this.props.content, syntax);
         }
-        if (syntax !== nextProps.syntax) {
-            this.changeSyntax(nextProps.syntax, nextProps.content);
+        if (syntax !== this.props.syntax) {
+            this.changeSyntax(this.props.syntax, this.props.content);
         }
-        if (readonly !== nextProps.readonly) {
-            this.state.editorViewer.readonly = nextProps.readonly;
-            this.state.editorViewer.editor.getTextView().setOptions({ readonly: nextProps.readonly });
+        if (readonly !== this.props.readonly) {
+            this.state.editorViewer.readonly = this.props.readonly;
+            this.state.editorViewer.editor.getTextView().setOptions({ readonly: this.props.readonly });
         }
     }
 
@@ -121,7 +121,7 @@ export default class OrionEditor extends React.Component {
     }
 
     changeSyntax(syntax, content) {
-        if (!content) {
+        if (typeof content === 'undefined' || content === null) {
             this.state.editorViewer.setContents(this.state.editorViewer.editor.getTextView().getText(), syntax);
         } else {
             this.state.editorViewer.setContents(content, syntax);
