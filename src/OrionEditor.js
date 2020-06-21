@@ -44,11 +44,14 @@ export default class OrionEditor extends React.Component {
 
     componentDidUpdate(prevProps) {
         const { content, syntax, readonly } = prevProps;
-        if (content !== this.props.content) {
-            this.state.editorViewer.setContents(this.props.content, syntax);
-        }
-        if (syntax !== this.props.syntax) {
-            this.changeSyntax(this.props.syntax, this.props.content);
+        const isSourceChanged = this.props.file && this.props.file !== prevProps.file;
+        if (isSourceChanged) {
+            this.state.editorViewer.setContents(this.props.content, this.props.syntax);
+        } else if (syntax !== this.props.syntax && content === this.props.content) {
+            const currentContent = this.state.editorViewer.editor.getTextView().getText();
+            this.changeSyntax(this.props.syntax, currentContent);
+        } else if (content !== this.props.content) {
+            this.state.editorViewer.setContents(this.props.content, this.props.syntax);
         }
         if (readonly !== this.props.readonly) {
             this.state.editorViewer.readonly = this.props.readonly;
@@ -121,7 +124,7 @@ export default class OrionEditor extends React.Component {
     }
 
     changeSyntax(syntax, content) {
-        if (typeof content === 'undefined' || content === null) {
+        if (!content) {
             this.state.editorViewer.setContents(this.state.editorViewer.editor.getTextView().getText(), syntax);
         } else {
             this.state.editorViewer.setContents(content, syntax);
@@ -145,6 +148,7 @@ export default class OrionEditor extends React.Component {
 }
 
 OrionEditor.propTypes = {
+    file: PropTypes.string,
     content: PropTypes.string,
     fullscreen: PropTypes.bool,
     languageFilesHost: PropTypes.string,
