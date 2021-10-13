@@ -33,7 +33,7 @@
         "eslint-plugin-react": "^7.3.0",
         "style-loader": "^0.18.2",
         "webpack": "^2.6.1",
-        "webpack-dev-server": "^2.4.5"
+        "webpack-dev-server": "^3.1.11"
     },
     "publishConfig": {
         "registry": "https://zowe.jfrog.io/zowe/api/npm/npm-local-release/"
