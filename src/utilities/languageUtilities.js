@@ -7,6 +7,9 @@
  *
  * Copyright IBM Corporation 2018, 2019
  */
+/* eslint no-restricted-syntax: ["error", "WithStatement", "BinaryExpression[operator='in']"] */
+/* eslint guard-for-in: "off" */
+/* eslint consistent-return: "off" */
 
 export function createContentAssistProvider(words) {
     return {
@@ -58,9 +61,11 @@ export function createHoverInfo(words) {
                     }
                 }
                 if (content.length > 0) {
-                    return { title: hoverword,
+                    return {
+                        title: hoverword,
                         content,
-                        type: 'markdown' };
+                        type: 'markdown',
+                    };
                 }
             });
             return myPromise;

@@ -14,4 +14,5 @@ import ReactDOM from 'react-dom';
 import DebugBar from './DebugBar';
 
 ReactDOM.render(
-    <DebugBar />, document.getElementById('app'));
+    <DebugBar />, document.getElementById('app'),
+);

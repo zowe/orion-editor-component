@@ -7,7 +7,7 @@
  *
  * Copyright IBM Corporation 2016, 2019
  */
-
+/* eslint react/no-access-state-in-setstate: "off" */
 import React from 'react';
 import OrionEditor from './OrionEditor';
 import { basicJCL, basicREXX, jesJCL } from '../resources/languageSamples';
@@ -46,8 +46,8 @@ class DebugBar extends React.Component {
                 <button onClick={() => { this.setState({ syntax: 'text/rexxcontext' }); }}>
                     Set syntax REXX
                 </button>
-                  Current syntax: {this.state.syntax}
-
+                Current syntax:
+                { this.state.syntax }
                 <OrionEditor content={this.state.content} syntax={this.state.syntax} readonly={this.state.readonly} />
             </div>
         );

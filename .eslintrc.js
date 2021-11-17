@@ -10,11 +10,13 @@ module.exports = {
         "indent": ["error", 4,{ "SwitchCase": 1 }],
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4],
+        "react/destructuring-assignment": "off",
+        "react/button-has-type": "off",
         "jsx-a11y/href-no-hash":0,
         "arrow-body-style": ["error", "always"],
         "arrow-parens": ["error", "as-needed"],
         "react/jsx-boolean-value":["error", "always"],
-        "max-len": ["error", 180],
+        "max-len": ["error", 250],
         "jsx-a11y/label-has-for": 0,
         "react/require-default-props": 0,
         "no-underscore-dangle":0,
@@ -29,7 +31,7 @@ module.exports = {
         "jest": true,
         "mocha": true
     },
-    "parser": "babel-eslint",
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",

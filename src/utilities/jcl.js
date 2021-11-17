@@ -229,8 +229,8 @@ const jsonData = {
         },
     },
     highlighter: {
-      	id: 'orion.JCL',
-   	    contentTypes: ['text/jclcontext'],
+        id: 'orion.JCL',
+        contentTypes: ['text/jclcontext'],
         patterns: [
             { include: 'orion.lib#string_doubleQuote' },
             { include: 'orion.lib#string_singleQuote' },
@@ -314,4 +314,3 @@ const jsonData = {
     },
 };
 export { jsonData as default };
-
