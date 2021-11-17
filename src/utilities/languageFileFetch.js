@@ -7,6 +7,7 @@
  *
  * Copyright IBM Corporation 2018, 2019
  */
+/* eslint no-param-reassign: "off" */
 
 import { createContentAssistProvider, createHoverInfo } from './languageUtilities';
 import languages from './languages';
@@ -17,8 +18,7 @@ function registerHoverHelp(contentType, highlightSchema) {
         {
             name: 'Hover helper',
             contentType: [contentType.id],
-        },
-    );
+        });
 }
 
 function registerContentAssist(contentType, contentAssistSchema) {
@@ -27,8 +27,7 @@ function registerContentAssist(contentType, contentAssistSchema) {
         {
             name: 'Content assistant provider',
             contentType: [contentType.id],
-        },
-    );
+        });
 }
 
 function registerFiles(contentTypes, funcCreateCodeEdit) {
