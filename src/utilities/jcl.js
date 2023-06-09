@@ -33,7 +33,7 @@ const jsonData = {
             ENDIF: 'Operation Field',
             ENDSET: 'Operation Field',
             EXEC: '__The EXEC PGM Operation Field__\n\nMarks the beginning of a job step; optionally assigns a name to the step; identifies the program or the cataloged or in-stream procedure to be executed in this step.',
-            EXPORT: 'Operation Field Smack it',
+            EXPORT: 'Operation Field',
             GJOB: 'Operation Field',
             IF: 'Operation Field',
             INCLUDE: 'Operation Field',
