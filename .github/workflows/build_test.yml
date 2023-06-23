@@ -79,14 +79,6 @@ jobs:
       - name: '[Build] Nodejs project build'
         run: npm run build
 
-      - name: '[Scan] SonarCloud Scan'
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-          sonar.projectVersion: ${{ env.P_VERSION }}
-          sonar.links.ci: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-      
       # note: this step is not actually doing upload to artifactory because no artifact input is provided.
       # this is just to parse and create a PUBLISH_VERSION then export, later NPM publish step can use.
       - name: '[Publish 1] Regular project publish'
